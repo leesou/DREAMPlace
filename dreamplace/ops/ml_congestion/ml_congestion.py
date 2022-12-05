@@ -78,11 +78,14 @@ class MLCongestion(nn.Module):
     def forward(self, pos):
         ############## Your code block begins here ##############
         macro_map = self.fixed_node_map_op(pos)
-        rudy_map = self.rudy_utilization_map_op(pos)
-        pinrudy_map = self.pinrudy_utilization_map_op(pos)
+        # rudy_map = self.rudy_utilization_map_op(pos)
+        # pinrudy_map = self.pinrudy_utilization_map_op(pos)
+        pin_pos = self.pin_pos_op(pos)
+        rudy_map = self.rudy_utilization_map_op(pin_pos)
+        pinrudy_map = self.pinrudy_utilization_map_op(pin_pos)
 
         ml_input = torch.stack([macro_map, rudy_map, pinrudy_map], dim=0).unsqueeze(0)
         self.ml_congestion_model = self.ml_congestion_model.to(ml_input.device)
         congestion_map = torch.squeeze(self.ml_congestion_model(ml_input))
-        return congestion_map
+        return congestion_map.add_(1)
         ############## Your code block ends here ################

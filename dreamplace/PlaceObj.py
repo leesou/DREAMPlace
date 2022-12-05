@@ -246,7 +246,8 @@ class PlaceObj(nn.Module):
             params, placedb, self.data_collections)
         self.op_collections.noise_op = self.build_noise(
             params, placedb, self.data_collections)
-        if params.routability_opt_flag:
+        # if params.routability_opt_flag:
+        if True:
             # compute congestion map, RISA/RUDY congestion map
             self.op_collections.rudy_utilization_map_op = self.build_rudy_utilization_map(
                 params, placedb, self.data_collections)
@@ -258,7 +259,8 @@ class PlaceObj(nn.Module):
                 self.op_collections.nctugr_congestion_map_op = self.build_nctugr_congestion_map(
                     params, placedb, self.data_collections)
             # require rudy_utilization_map_op and pinrudy_utilization_map_op defined first 
-            if params.adjust_ml_congestion_area_flag: 
+            # if params.adjust_ml_congestion_area_flag:
+            if True: 
                 self.op_collections.ml_congestion_map_op = self.build_ml_congestion_map(
                     params, placedb, self.data_collections)
             # adjust instance area with congestion map
@@ -1063,10 +1065,46 @@ class PlaceObj(nn.Module):
                         [data_collections.node_size_x.numel()-0, data_collections.node_size_x.numel()]],
             deterministic_flag=params.deterministic_flag
         )
+        rudy_utilization_map_op = rudy.Rudy(
+            netpin_start=data_collections.flat_net2pin_start_map,
+            flat_netpin=data_collections.flat_net2pin_map,
+            net_weights=data_collections.net_weights,
+            xl=placedb.routing_grid_xl,
+            yl=placedb.routing_grid_yl,
+            xh=placedb.routing_grid_xh,
+            yh=placedb.routing_grid_yh,
+            num_bins_x=placedb.num_routing_grids_x,
+            num_bins_y=placedb.num_routing_grids_y,
+            unit_horizontal_capacity=placedb.unit_horizontal_capacity,
+            unit_vertical_capacity=placedb.unit_vertical_capacity,
+            deterministic_flag=params.deterministic_flag, 
+            initial_horizontal_utilization_map=data_collections.
+            initial_horizontal_utilization_map,
+            initial_vertical_utilization_map=data_collections.
+            initial_vertical_utilization_map)
+        pinrudy_utilization_map_op = pinrudy.PinRudy(
+            netpin_start=data_collections.flat_net2pin_start_map,
+            flat_netpin=data_collections.flat_net2pin_map,
+            net_weights=data_collections.net_weights,
+            xl=placedb.routing_grid_xl,
+            yl=placedb.routing_grid_yl,
+            xh=placedb.routing_grid_xh,
+            yh=placedb.routing_grid_yh,
+            num_bins_x=placedb.num_routing_grids_x,
+            num_bins_y=placedb.num_routing_grids_y,
+            unit_horizontal_capacity=placedb.unit_horizontal_capacity,
+            unit_vertical_capacity=placedb.unit_vertical_capacity,
+            deterministic_flag=params.deterministic_flag, 
+            initial_horizontal_utilization_map=data_collections.
+            initial_horizontal_utilization_map,
+            initial_vertical_utilization_map=data_collections.
+            initial_vertical_utilization_map)
         return ml_congestion.MLCongestion(
             fixed_node_map_op=fixed_node_map_op,
-            rudy_utilization_map_op=self.op_collections.rudy_utilization_map_op,
-            pinrudy_utilization_map_op=self.op_collections.pinrudy_utilization_map_op,
+            # rudy_utilization_map_op=self.op_collections.rudy_utilization_map_op,
+            # pinrudy_utilization_map_op=self.op_collections.pinrudy_utilization_map_op,
+            rudy_utilization_map_op=rudy_utilization_map_op,
+            pinrudy_utilization_map_op=pinrudy_utilization_map_op,
             pin_pos_op=self.op_collections.pin_pos_op,
             xl=placedb.routing_grid_xl,
             yl=placedb.routing_grid_yl,
