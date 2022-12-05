@@ -45,7 +45,7 @@
 "route_opt_adjust_exponent" : 2.5, 
 "pin_stretch_ratio" : 1.414213562, 
 "max_pin_opt_adjust_rate" : 1.5, 
-"pretrained_ml_congestion_weight_file" : "./congestion.pth",
+"pretrained_ml_congestion_weight_file" : "weights/congestion/model_iters_200000.pth",
 "num_threads" : 8,
 "deterministic_flag" : 1, 
 "sol_file_format" : "DEF"
