@@ -684,6 +684,20 @@ class NonLinearPlace(BasicPlace.BasicPlace):
             logging.info(cur_metric)
             iteration += 1
 
+        # record evaluation metrics for idcas2022 project
+        ml_congestion_map = model.op_collections.ml_congestion_map_op(model.data_collections.pos[0])
+        hpwl = cur_metric.hpwl.data
+        cong_values = []
+        for ratio in [0.005, 0.01, 0.02, 0.05]:
+            cong_tensor = ml_congestion_map.reshape(-1)
+            top_ratio_values, _ = cong_tensor.topk(int(cong_tensor.size(0)*ratio))
+            cong_value = torch.mean(top_ratio_values).data
+            cong_values.append(cong_value)
+        cong = sum(cong_values)/len(cong_values)
+        metric = hpwl*(1+0.03*100*cong)
+        with open('idcas2022-proj-metric', 'w') as f:
+            f.write('hpwl is %.6f, cong is %.6f, metric value is %.6f' % (hpwl, cong, metric))
+
         # save results
         cur_pos = self.pos[0].data.clone().cpu().numpy()
         # apply solution
